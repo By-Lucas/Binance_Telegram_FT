@@ -144,7 +144,7 @@ class MessageGrups():
                     print (" ============================================= ")
 
 
-class loopRecebedor(MessageGrups):
+class loopRecebedor():
     MessageGrups.list_msg_grups()
 
     def start(self):
@@ -160,8 +160,6 @@ class loopRecebedor(MessageGrups):
             
     print('Tudo certo!')
     conexao.client.loop.run_until_complete(main())
-    
-
     
     #   VERIFICAR LISTA DE ENTRADAS E FAZER AS ENTRADAS
     #   VERIFICAR LISTA DE ENTRADAS E FAZER AS ENTRADAS
