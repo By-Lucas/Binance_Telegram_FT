@@ -4,13 +4,14 @@ from asyncio.runners import run
 from telethon.sync import TelegramClient
 from telethon.tl.functions.messages import GetDialogsRequest
 from telethon.tl.types import InputPeerEmpty
-import os, sys
-import configparser
-import csv
-import time
+import os
 from telethon import TelegramClient, client, events
 import threading
 
+from binance.enums import *
+from binance.client import Client
+
+from secrets import api_secret, api_key
 from conection import TIPOS, CONNECTION, INFOBINANCE
 
 conn_binance = INFOBINANCE()
@@ -20,14 +21,12 @@ tipos = TIPOS()
 class MessageGrups():
     def clear():
         try:
-            import os
             lines = os.get_terminal_size().lines
         except AttributeError:
             lines = 15
         print("\n" * lines)
-    
-    def list_msg_grups(par, findPar, entrar_em, find_entrada, take_profit, findTake, \
-                    Short_buy, findBuy_or_sell, horario, findHorario):
+
+    def list_msg_grups():
         conexao.client.connect()
 
         #Se nao estiver conectado, vai enviar codigo para telegram
@@ -148,9 +147,10 @@ class MessageGrups():
                     print (event.message.message)
                     print (" ============================================= ")
 
+if __name__ == "__main__":
+    MessageGrups.list_msg_grups()
 
-class loopRecebedor():
-    execute = MessageGrups.list_msg_grups()
+class LoopRecebedorBinance():
 
     def start(self):
         self._thread = threading.Thread(target=self.run())
@@ -171,10 +171,29 @@ class loopRecebedor():
         pass
 
     def Order_demo():
-        pass
+        ordem_teste = Client.create_test_order(
+            symbol = "BTCBRL",
+            side=SIDE_BUY,
+            type=ORDER_TYPE_LIMIT,
+            timeInforce=TIME_IN_FORCE_GTC,
+            quantity=0.001,
+            price=320000
+        )
+        print('ordem efetuada')
+        #return ordem_teste
 
     def Order_real():
-        pass
+        ordem_real = Client.create_order(
+            symbol = "BTCBRL",
+            side=SIDE_BUY,
+            type=ORDER_TYPE_LIMIT,
+            timeInforce=TIME_IN_FORCE_GTC,
+            quantity=0.001,
+            price=320000
+        )
+        return ordem_real
     
     #   VERIFICAR LISTA DE ENTRADAS E FAZER AS ENTRADAS
     #   VERIFICAR LISTA DE ENTRADAS E FAZER AS ENTRADAS
+
+LoopRecebedorBinance.Order_demo()
