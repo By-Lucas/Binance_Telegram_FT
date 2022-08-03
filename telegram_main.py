@@ -11,8 +11,9 @@ import time
 from telethon import TelegramClient, client, events
 import threading
 
-from conection import TIPOS, CONNECTION
+from conection import TIPOS, CONNECTION, INFOBINANCE
 
+conn_binance = INFOBINANCE()
 conexao = CONNECTION()
 tipos = TIPOS()
 
@@ -25,7 +26,8 @@ class MessageGrups():
             lines = 15
         print("\n" * lines)
     
-    def list_msg_grups():
+    def list_msg_grups(par, findPar, entrar_em, find_entrada, take_profit, findTake, \
+                    Short_buy, findBuy_or_sell, horario, findHorario):
         conexao.client.connect()
 
         #Se nao estiver conectado, vai enviar codigo para telegram
@@ -80,6 +82,10 @@ class MessageGrups():
             async def myfunc (event):
                 msgRecebida = event.message.message #event.raw_text
         
+                #VARIAVEIS GLOBAIS
+                global par, findPar, entrar_em, find_entrada, take_profit, findTake, \
+                    Short_buy, findBuy_or_sell, horario, findHorario
+
                 #MODELOS PARES DE MOEDAS
                 par = ""
                 findPar = False
@@ -106,7 +112,6 @@ class MessageGrups():
                 #MODELOS DE COMRPA E VENDA
                 Short_buy = ""
                 findBuy_or_sell = False
-                
                 if "#Long".lower().replace("#", "") in msgRecebida.lower():
                     Short_buy = 'Compra'
                     findBuy_or_sell = True
@@ -145,7 +150,7 @@ class MessageGrups():
 
 
 class loopRecebedor():
-    MessageGrups.list_msg_grups()
+    execute = MessageGrups.list_msg_grups()
 
     def start(self):
         self._thread = threading.Thread(target=self.run())
@@ -153,6 +158,7 @@ class loopRecebedor():
     
     def run(self):
         conexao.client.start()
+        
 
     async def main():
         while True:
@@ -160,7 +166,15 @@ class loopRecebedor():
             
     print('Tudo certo!')
     conexao.client.loop.run_until_complete(main())
+
+    def balance():
+        pass
+
+    def Order_demo():
+        pass
+
+    def Order_real():
+        pass
     
     #   VERIFICAR LISTA DE ENTRADAS E FAZER AS ENTRADAS
     #   VERIFICAR LISTA DE ENTRADAS E FAZER AS ENTRADAS
-

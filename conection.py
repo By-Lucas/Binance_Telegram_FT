@@ -7,6 +7,9 @@ class CONNECTION():
     phone = '+5574981423804'
     id_groups = '-1001729353083' #ID do grupo: Crypto Czar®🔥
     client = TelegramClient(phone, api_id, api_hash)
+
+class INFOBINANCE():
+    pass
     
 
 class TIPOS:

@@ -4,22 +4,23 @@ from asyncio.runners import run
 from telethon.sync import TelegramClient
 from telethon.tl.functions.messages import GetDialogsRequest
 from telethon.tl.types import InputPeerEmpty
-import os, sys
-import configparser
-import csv
-import time
+import os
 from telethon import TelegramClient, client, events
 import threading
 
-from conection import TIPOS, CONNECTION
+from binance.enums import *
+from binance.client import Client
 
+from credentials.secrets import api_secret, api_key
+from conection import TIPOS, CONNECTION, INFOBINANCE
+
+conn_binance = INFOBINANCE()
 conexao = CONNECTION()
 tipos = TIPOS()
 
 class MessageGrups():
     def clear():
         try:
-            import os
             lines = os.get_terminal_size().lines
         except AttributeError:
             lines = 15
@@ -32,7 +33,7 @@ class MessageGrups():
         if not conexao.client.is_user_authorized():
             conexao.client.send_code_request(conexao.phone)
             conexao.client.sign_in(conexao.phone, input('Digite o codigo enviado: '))
-            
+
         #Limpar terminal
         MessageGrups.clear()
 
@@ -80,6 +81,10 @@ class MessageGrups():
             async def myfunc (event):
                 msgRecebida = event.message.message #event.raw_text
         
+                #VARIAVEIS GLOBAIS
+                global par, findPar, entrar_em, find_entrada, take_profit, findTake, \
+                    Short_buy, findBuy_or_sell, horario, findHorario
+
                 #MODELOS PARES DE MOEDAS
                 par = ""
                 findPar = False
@@ -106,7 +111,6 @@ class MessageGrups():
                 #MODELOS DE COMRPA E VENDA
                 Short_buy = ""
                 findBuy_or_sell = False
-                
                 if "#Long".lower().replace("#", "") in msgRecebida.lower():
                     Short_buy = 'Compra'
                     findBuy_or_sell = True
@@ -143,11 +147,9 @@ class MessageGrups():
                     print (event.message.message)
                     print (" ============================================= ")
 
+MessageGrups.list_msg_grups()
 
-    
-
-class loopRecebedor(MessageGrups):
-    MessageGrups.list_msg_grups()
+class LoopRecebedorBinance():
 
     def start(self):
         self._thread = threading.Thread(target=self.run())
@@ -155,6 +157,7 @@ class loopRecebedor(MessageGrups):
     
     def run(self):
         conexao.client.start()
+        
 
     async def main():
         while True:
@@ -162,9 +165,31 @@ class loopRecebedor(MessageGrups):
             
     print('Tudo certo!')
     conexao.client.loop.run_until_complete(main())
-    
 
+    def balance():
+        pass
+
+    def Order_demo():
+        ordem_teste = Client.create_test_order(
+            symbol = "BTCBRL",
+            side=SIDE_BUY,
+            type=ORDER_TYPE_LIMIT,
+            timeInforce=TIME_IN_FORCE_GTC,
+            quantity=0.001,
+            price=320000
+        )
+        return ordem_teste
+
+    def Order_real():
+        ordem_real = Client.create_order(
+            symbol = "BTCBRL",
+            side=SIDE_BUY,
+            type=ORDER_TYPE_LIMIT,
+            timeInforce=TIME_IN_FORCE_GTC,
+            quantity=0.001,
+            price=320000
+        )
+        return ordem_real
     
     #   VERIFICAR LISTA DE ENTRADAS E FAZER AS ENTRADAS
     #   VERIFICAR LISTA DE ENTRADAS E FAZER AS ENTRADAS
-
