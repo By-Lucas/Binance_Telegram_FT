@@ -11,7 +11,7 @@ import threading
 from binance.enums import *
 from binance.client import Client
 
-from secrets import api_secret, api_key
+from crecentials import api_secret, api_key
 from conection import TIPOS, CONNECTION, INFOBINANCE
 
 conn_binance = INFOBINANCE()

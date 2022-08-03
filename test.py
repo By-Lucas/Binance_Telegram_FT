@@ -12,12 +12,15 @@ import threading
 from binance.enums import *
 from binance.client import Client
 
-from secrets import api_secret, api_key
+from crecentials import api_secret, api_key
 from conection import TIPOS, CONNECTION, INFOBINANCE
 
 conn_binance = INFOBINANCE()
 conexao = CONNECTION()
 tipos = TIPOS()
+
+amount = 0.001
+
 
 def clear():
     try:
@@ -82,13 +85,12 @@ def list_msg_grups():
         return id_grupos
 
 def models_message():
-    #VARIAVEIS GLOBAIS
-
     gru = list_msg_grups()
     @conexao.client.on(events.NewMessage(chats=gru))
     async def myfunc (event):
         msgRecebida = event.message.message #event.raw_text
 
+        #VARIAVEIS GLOBAIS
         global par, findPar, entrar_em, find_entrada, take_profit, findTake, \
         Short_buy, findBuy_or_sell, horario, findHorario
 
@@ -135,7 +137,6 @@ def models_message():
                 break
 
         if findPar and find_entrada and findTake and Short_buy and findHorario:
-
             #   SALVAR ENTRADA EM UMA LISTA DE ENTRADAS
             #   SALVAR ENTRADA EM UMA LISTA DE ENTRADAS
 
@@ -145,8 +146,8 @@ def models_message():
             print(f"TAKES PROFIT: {take_profit}")
             print(f"COMPRA / VENDA: {Short_buy}")
             print(f"HORÁRIO: {horario}")
-            
             return par, entrar_em, take_profit, Short_buy, horario
+
         else:
             print (" ========  NÃO ENCONTROU ===================== ")
             print (f"Paridade: {findPar}, Entrar em: {find_entrada}, Take profit : {findTake}, Compra / venda: {findBuy_or_sell}, Horário : {findHorario}")
@@ -154,7 +155,7 @@ def models_message():
             print (event.message.message)
             print (" ============================================= ")
         
-models_message()
+
 
 
 def start(self):
@@ -172,4 +173,36 @@ async def main():
 print('Tudo certo!')
 conexao.client.loop.run_until_complete(main())
 
+def balance():
+    pass
 
+def Order_demo():
+    ordem_teste = Client.create_test_order(
+        symbol = "BTCBRL",
+        side=SIDE_BUY,
+        type=ORDER_TYPE_LIMIT,
+        timeInforce=TIME_IN_FORCE_GTC,
+        quantity=0.001,
+        price=320000
+    )
+    return ordem_teste
+
+def Order_real():
+    ordem_real = Client.create_order(
+        symbol = "BTCBRL",
+        side=SIDE_BUY,
+        type=ORDER_TYPE_LIMIT,
+        timeInforce=TIME_IN_FORCE_GTC,
+        quantity=0.001,
+        price=320000
+    )
+    return ordem_real
+
+
+def start(demo, amount=0.005):
+
+    count_real = Order_real
+    list_sinals = list_msg_grups()
+    if demo:
+        print("AMBIENTE DE TESTES")
+        count_demo = Order_demo
