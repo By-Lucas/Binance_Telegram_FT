@@ -1,5 +1,5 @@
 from binance.client import Client
-from crecentials import api_secret, api_key
+from credentials import api_secret, api_key
 
 client = Client(api_key, api_secret)
 
@@ -18,12 +18,13 @@ for ativo in lista_ativos:
 
 # criar uma ordem dentro da binance
 from binance.enums import *
+
 order = client.create_test_order(
     symbol='BNBBRL',
     side=SIDE_SELL,
     type=ORDER_TYPE_MARKET,
     quantity=0.01,
-    )
+)
 print('ODERM', order)
 
 # visualizar as ordens executadas

@@ -1,23 +1,19 @@
 #Bibliotecas
 import asyncio
-from asyncio.runners import run
-import time
-from telethon.sync import TelegramClient
 from telethon.tl.functions.messages import GetDialogsRequest
 from telethon.tl.types import InputPeerEmpty
 import os
-from telethon import TelegramClient, client, events
+from telethon import events
 import threading
 
 from binance.enums import *
 from binance.client import Client
 
-from crecentials import api_secret, api_key
-from conection import TIPOS, CONNECTION, INFOBINANCE
+from Telegram.conection import Tipos, Connection, InfoBinance
 
-conn_binance = INFOBINANCE()
-conexao = CONNECTION()
-tipos = TIPOS()
+conn_binance = InfoBinance()
+conexao = Connection()
+tipos = Tipos()
 
 amount = 0.001
 
