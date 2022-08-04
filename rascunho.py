@@ -1,32 +1,29 @@
 #Bibliotecas
 import asyncio
-from asyncio.runners import run
-from telethon.sync import TelegramClient
 from telethon.tl.functions.messages import GetDialogsRequest
 from telethon.tl.types import InputPeerEmpty
 import os
-from telethon import TelegramClient, client, events
+from telethon import events
 import threading
 
 from binance.enums import *
 from binance.client import Client
 
-from crecentials import api_secret, api_key
-from conection import TIPOS, CONNECTION, INFOBINANCE
+from Telegram.conection import Tipos, Connection, InfoBinance
 
-conn_binance = INFOBINANCE()
-conexao = CONNECTION()
-tipos = TIPOS()
+conn_binance = InfoBinance()
+conexao = Connection()
+tipos = Tipos()
 
 class MessageGrups():
-    def clear():
+    def clear(self):
         try:
             lines = os.get_terminal_size().lines
         except AttributeError:
             lines = 15
         print("\n" * lines)
     
-    def list_msg_grups():
+    def list_msg_grups(self):
         conexao.client.connect()
 
         #Se nao estiver conectado, vai enviar codigo para telegram
@@ -159,17 +156,17 @@ class LoopRecebedorBinance():
         conexao.client.start()
         
 
-    async def main():
+    async def main(self):
         while True:
             await asyncio.sleep(1)
             
     print('Tudo certo!')
     conexao.client.loop.run_until_complete(main())
 
-    def balance():
+    def balance(self):
         pass
 
-    def Order_demo():
+    def Order_demo(self):
         ordem_teste = Client.create_test_order(
             symbol = "BTCBRL",
             side=SIDE_BUY,
@@ -180,7 +177,7 @@ class LoopRecebedorBinance():
         )
         return ordem_teste
 
-    def Order_real():
+    def Order_real(self):
         ordem_real = Client.create_order(
             symbol = "BTCBRL",
             side=SIDE_BUY,
