@@ -1,6 +1,9 @@
 # from telethon import TelegramClient
 from telethon.sync import TelegramClient
+import toml
 from decouple import config
+
+config_telegram = toml.load('settings/config.toml')
 
 
 class Connection:
@@ -10,10 +13,21 @@ class Connection:
         self.phone = config("PHONE")
         self.id_groups = '-1001729353083'  # ID do grupo: Crypto Czar®🔥
         self.client = TelegramClient(self.phone, self.api_id, self.api_hash)
+        print(self.api_hash)
 
 
 class InfoBinance:
     pass
+
+
+class ConfigTelegam:
+    def __init__(self):
+        self.authentication = config_telegram.get("authentication")
+        self.email = self.authentication["email"]
+        self.password = self.authentication["password"]
+        self.account_type = config_telegram.get("management")["account_type"]
+        self.amount = config_telegram.get("management")["amount"]
+        self.take_profit = config_telegram.get("management")["take_profit"]
 
 
 class Tipos:

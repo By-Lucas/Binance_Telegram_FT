@@ -1,0 +1,24 @@
+title = "BinanceBot TOML Config"
+
+[project]
+name = "Binance Bot"
+description = "Apostas automáticas na plataforma Binance atraves de sinais Telegram"
+version = "0.1-trial"
+author = "Lucas e Rafael"
+
+
+[authentication]
+email = "test123@gmail.com"
+password = "test123"
+
+
+[management]
+# Deseja usar conta DEMO ou REAL
+account_type = "demo"  # demo ou real
+
+# Deseja fazer o Take Profit em qual posição?
+# Escolhe entre 1, 2, 3 ou 4
+take_profit = 3
+
+# Valor de entradas
+amount = 0.01
