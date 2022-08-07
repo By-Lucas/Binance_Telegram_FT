@@ -6,6 +6,11 @@
 ### Telegram
 
 ### Binance
+**Create api_key and api_secret**
+~~~ shell
+https://testnet.binance.vision/
+~~~
+
 Endpoint for testnet
 
 `self._base_url = "https://testnet.binancefuture.com`  
