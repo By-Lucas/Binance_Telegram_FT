@@ -9,28 +9,28 @@ import threading
 from binance.enums import *
 from binance.client import Client
 
-from Telegram.conection import Tipos, Connection, InfoBinance
+from settings.connections import Tipos, ConnTelegram, ConnBinance
 
-conn_binance = InfoBinance()
-conexao = Connection()
+conn_binance = ConnBinance()
+conn_telegram = ConnTelegram()
 tipos = Tipos()
 
 
-class MessageGrups():
-    def clear():
+class MessageGrups:
+
+    def clear(self):
         try:
             lines = os.get_terminal_size().lines
         except AttributeError:
             lines = 15
         print("\n" * lines)
 
-    def list_msg_grups():
-        conexao.client.connect()
-
+    def list_msg_grups(self):
+        conn_telegram.client.connect()
         # Se nao estiver conectado, vai enviar codigo para telegram
-        if not conexao.client.is_user_authorized():
-            conexao.client.send_code_request(conexao.phone)
-            conexao.client.sign_in(conexao.phone, input('Digite o codigo enviado: '))
+        if not conn_telegram.client.is_user_authorized():
+            conn_telegram.client.send_code_request(conn_telegram.phone)
+            conn_telegram.client.sign_in(conn_telegram.phone, input('Digite o codigo enviado: '))
 
         # Limpar terminal
         MessageGrups.clear()
@@ -41,7 +41,7 @@ class MessageGrups():
         chunk_size = 200
         groups = []
 
-        result = conexao.client(GetDialogsRequest(
+        result = conn_telegram.client(GetDialogsRequest(
             offset_date=last_date,
             offset_id=0,
             offset_peer=InputPeerEmpty(),
@@ -65,17 +65,17 @@ class MessageGrups():
         GRUPOS = []
 
         target_group = groups[int(g_index)]
-        grupo_msg = conexao.client.get_messages(groups[int(g_index)], limit=200)
+        grupo_msg = conn_telegram.client.get_messages(groups[int(g_index)], limit=200)
         g = {"target_group": target_group, 'grupo_msg': grupo_msg}
         GRUPOS.append(g)
 
         target_group = groups[int(g_index_2)]
-        grupo_msg = conexao.client.get_messages(groups[int(g_index_2)], limit=200)
+        grupo_msg = conn_telegram.client.get_messages(groups[int(g_index_2)], limit=200)
         g = {"target_group": target_group, 'grupo_msg': grupo_msg}
         GRUPOS.append(g)
 
         for gr in GRUPOS:
-            @conexao.client.on(events.NewMessage(chats=gr['target_group'].id))
+            @conn_telegram.client.on(events.NewMessage(chats=gr['target_group'].id))
             async def myfunc(event):
                 msgRecebida = event.message.message  # event.raw_text
 
@@ -147,25 +147,21 @@ class MessageGrups():
                     print(" ============================================= ")
 
 
-if __name__ == "__main__":
-    MessageGrups.list_msg_grups()
-
-
-class LoopRecebedorBinance():
+class LoopRecebedorBinance:
 
     def start(self):
         self._thread = threading.Thread(target=self.run())
         self._thread.start()
 
     def run(self):
-        conexao.client.start()
+        conn_telegram.client.start()
 
-    async def main(self):
+    async def main():
         while True:
             await asyncio.sleep(1)
 
     print('Tudo certo!')
-    conexao.client.loop.run_until_complete(main())
+    conn_telegram.client.loop.run_until_complete(main())
 
     def balance(self):
         pass
@@ -197,4 +193,6 @@ class LoopRecebedorBinance():
     #   VERIFICAR LISTA DE ENTRADAS E FAZER AS ENTRADAS
 
 
-LoopRecebedorBinance.Order_demo()
+if __name__ == "__main__":
+    MessageGrups.list_msg_grups()
+    LoopRecebedorBinance.Order_demo()

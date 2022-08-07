@@ -12,11 +12,11 @@ import threading
 import pandas as pd
 import re
 
-from Telegram.conection import Tipos, Connection, InfoBinance, ConfigTelegam
+from settings.connections import Tipos, ConnTelegram, ConnBinance, ConfigTelegam
 
 conf_t = ConfigTelegam()
-conn_binance = InfoBinance()
-conexao = Connection()
+conn_binance = ConnBinance()
+conexao = ConnTelegram()
 tipos = Tipos()
 
 amount = 0.001

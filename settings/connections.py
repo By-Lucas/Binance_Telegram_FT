@@ -1,12 +1,20 @@
+import os
+import requests
+import json
+
 # from telethon import TelegramClient
 from telethon.sync import TelegramClient
+
 import toml
+
 from decouple import config
 
-config_telegram = toml.load('settings/config.toml')
+cwd = os.getcwd()  # Get the current working directory (cwd)
+path = cwd.replace('FT/Binance', 'FT/settings/config.toml')
+config_telegram = toml.load(path)
 
 
-class Connection:
+class ConnTelegram:
     def __init__(self):
         self.api_id = config("API_ID")
         self.api_hash = config("API_HASH")
@@ -16,8 +24,28 @@ class Connection:
         print(self.api_hash)
 
 
-class InfoBinance:
-    pass
+class ConnBinance:
+    def __init__(self, testnet: bool = True):
+        self.testnet = testnet
+        if testnet:
+            self.api_key = config('API_KEY_TESTNET')
+            self.secret = config('API_SECRET_TESTNET')
+            self.url = 'https://testnet.binancefuture.com'
+        else:
+            self.api_key = config('API_KEY_REAL')
+            self.api_secret = config('API_SECRET_REAL')
+            self.url = 'https://fapi.binance.com'
+
+    def check_conn(self):
+        try:
+            request = requests.get(self.url + '/fapi/v1/ping')
+            r = request.json()
+            if self.testnet:
+                return 'Binance TESTNET connection successfully!!!'
+            return 'Binance REAL ACCOUNT connection successfully!!!!!!'
+
+        except Exception as e:
+            print(e)
 
 
 class ConfigTelegam:
