@@ -6,8 +6,8 @@ from datetime import datetime
 
 #config_logging(logging, logging.DEBUG)
 
-api_key='a23ec1cfdb5b1f61f05601222796224170774564bfe7f75774e120bb4140554b'
-api_secret='70fa057ec9ae86a9f40ee8f6587b42043475a341bfb71348e7655c338a6fc9f4'
+api_key=''
+api_secret=''
 
 
 base_url_test = 'https://testnet.binancefuture.com'
