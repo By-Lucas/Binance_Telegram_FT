@@ -5,11 +5,6 @@
 ## Saídas esperadas
 ### Telegram
 
-### Binance
-**Create api_key and api_secret**
-~~~ shell
-https://testnet.binance.vision/
-~~~
 
 Endpoint for testnet
 
