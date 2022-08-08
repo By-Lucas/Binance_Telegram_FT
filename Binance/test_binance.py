@@ -52,11 +52,32 @@ def add_new_order():
             )
         )
 
-def get_all_orders():
+def new_list_order(params= list):
+    params = {
+        "batchOrders": [
+            {
+                "symbol":"ETHUSDT",
+                "side": "SELL",
+                "type": "LIMIT",
+                "quantity": "0.001",
+                "timeInForce": "GTC",
+                "reduceOnly": "false",
+                "price": "23939"
+            },
+            {
+                "symbol":"BTCUSDT",
+                "side": "SELL",
+                "type": "LIMIT",
+                "quantity": "0.001",
+                "timeInForce": "GTC",
+                "reduceOnly": "false",
+                "price": "23939"
+            }
+            ]
+    }
     try:
-        response = client.get_all_orders(symbol="BTCUSDT", recvWindow=2000)
-        #logging.info(response)
-        print(response)
+        order_list = client.new_batch_order(**params)
+        print('Success orders')
     except ClientError as error:
         logging.error(
             "Found error. status: {}, error code: {}, error message: {}".format(
@@ -64,6 +85,49 @@ def get_all_orders():
             )
         )
 
-#add_new_order()
-#get_all_orders()
-print(total_wallet_balance())
+
+def get_all_orders( ** kwargs ):
+    params  = { ** kwargs }
+    try:
+        response = client.get_orders()
+        
+        if response:
+            lista = []
+            for orders in response:
+                lista.append(orders)
+                order_id = orders['orderId']
+                symbol = orders['symbol']
+                client_order_id = orders['clientOrderId']
+                stop_price = orders['stopPrice']
+                print(order_id, symbol, client_order_id, stop_price)
+        else:
+            print('Not ordes')
+    except ClientError as error:
+        logging.error(
+            "Found error. status: {}, error code: {}, error message: {}".format(
+                error.status_code, error.error_code, error.error_message
+            )
+        )
+    return lista
+
+def cancel_ordes_open( **kwargs):
+    all_orders = get_all_orders()
+    for cancel_lista in all_orders:
+        symbol = cancel_lista['symbol']
+    try:
+        reresponse = client.cancel_open_orders(symbol=symbol, recvWindow=2000,
+                                                )
+        print('Ordemm cancelada')
+    except ClientError as error:
+        logging.error(
+            "Found error. status: {}, error code: {}, error message: {}".format(
+                error.status_code, error.error_code, error.error_message
+            )
+        )
+
+
+cancel_ordes_open() # Cancelar ordem aberta
+#get_all_orders() # Pegar ordens aberta
+#new_list_order() # fazer ordens multiplas
+#add_new_order() # Uma ordem por vez
+#total_wallet_balance() # informacoes financeira da conta
