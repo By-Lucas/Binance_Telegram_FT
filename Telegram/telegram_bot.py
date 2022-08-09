@@ -18,10 +18,22 @@ app = Client("bot_sessions/Bot_telegram",api_id=api_id, api_hash=api_hash, bot_t
 
 
 
-@app.on_message(filters.command('ajuda'))
+@app.on_message(filters.command('ajuda') | filters.command('start'))
 async def ajuda(client, message):
+    usuario = message.chat.username
     await message.reply(
-        'Esse é menu para pedir ajuda!'
+        f'''
+        **Bot Binance - Operações automáticas**\n
+        Olá **{usuario}** 😃\n
+        Por favor escolha umas da opções abaixo!\n
+        User **/start** Para inciar o bot!\n
+        User **/menu** para ir ao menu principal!\n
+        User **/help** Para menu de ajuda!\n
+        User **/outros** Para demais opções no teclado!\n
+        **Não envie audio ou gravações de voz!**\r
+        **Não envie Stickers!** xD\r
+        **Não envie imagens!**\r
+        '''
     )
 
 
@@ -54,16 +66,16 @@ async def callback(client, callback_query):
         reply_markup = InlineKeyboardMarkup([[page['menu'], page['anterior'], page['proximo']]])
     )
 
+
 @app.on_message(filters.command('menu'))
 async def botoes(client, message):
     usuario = message.chat.username
     botoes = InlineKeyboardMarkup(
         [
             [
-                InlineKeyboardButton('Site Bot Binance', url='https://www.youtube.com/watch?v=bO-ksqJNPXg'),
+                InlineKeyboardButton('Site Bot Binance', url='www.google.com.br'),
                 InlineKeyboardButton('Renovar licença', callback_data='0'),
                 InlineKeyboardButton('Comprar bot', callback_data='0'),
-               
             ],
             [
                 InlineKeyboardButton('Canal VIP', callback_data='0'),
@@ -79,7 +91,8 @@ async def botoes(client, message):
     )
     await message.reply(f'''Olá **{usuario}**, Escolha uma das opções abaixo:''', reply_markup=botoes)
 
-@app.on_message(filters.command('teclado'))
+
+@app.on_message(filters.command('outros'))
 async def tecado(client, message):
     teclado = ReplyKeyboardMarkup(
         [
@@ -92,6 +105,7 @@ async def tecado(client, message):
         'Aperta ai no teclado',
         reply_markup = teclado
     )
+
 
 #filters.private = Se a conversa for no privado, se for em grupo ficaria(filters.group("Nome_do_grupo"))
 @app.on_message(filters.sticker)
@@ -107,20 +121,26 @@ async def photo_video(client, message):
         'Não respondemos por fotos ou videos, escolha uma opção válida'
     )
 
+
 @app.on_message(filters.photo | filters.video)
 async def photo_video(client, message):
     await message.reply(
         'Não respondemos por fotos ou videos, escolha uma opção válida'
     )
 
+
 # pegar quem mandou mensgem para o bot
 @app.on_message()
 async def messages(client, message):
     print(message.chat.username, message.text)
     usuario = message.chat.username
-    await message.reply(f'Seja bem vindo: {usuario}')
+    await message.reply(
+        f'Seja bem vindo: {usuario}',
+        'Digite **/start** ou **/ajuda** para iniciar o bot'
+        )
 
 
+# Enviar mensagem para um determinado usuario
 # async def main():
 #     await app.start()
 #     await app.send_message('@tk_milionario', 'Ola Lucas')
