@@ -1,5 +1,10 @@
 from binance.client import Client
-from credentials import api_secret, api_key
+from decouple import config
+
+
+api_key = config('API_KEY_REAL')
+api_secret = config('API_SECRET_REAL')
+base_url_test = 'https://fapi.binance.com'
 
 client = Client(api_key, api_secret)
 
@@ -31,5 +36,5 @@ print('ODERM', order)
 print(client.get_all_orders(symbol='BNBBRL'))
 print(client.get_my_trades(symbol='BNBBRL'))
 
-# te mostrar as referências de cada par de moedas
+# Mostrar as referências de cada par de moedas
 print(client.get_symbol_info('BNBBRL'))

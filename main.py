@@ -1,5 +1,5 @@
-from Binance.binance_test import BinanceFunctions
+from Binance.binance_testnet import BinanceManager
 
 if __name__ == '__main__':
-    ic = BinanceFunctions()
-    ic.new_test_order()
+    bg = BinanceManager()
+    bg.total_wallet_balance()
