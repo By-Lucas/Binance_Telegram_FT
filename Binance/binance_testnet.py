@@ -24,9 +24,8 @@ class BinanceManager:
 
         self.client = Client(key=self.api_key, secret=self.api_secret, base_url=self.base_url_test)
 
-    def total_wallet_balance(self):
+    def total_wallet_balance(self) -> str:
         try:
-            print("Total wallet balance")
             res = self.client.account(timestamp=datetime.now().timestamp())
             for ativo in res['assets']:
                 if float(ativo["walletBalance"]) > 0:
@@ -49,18 +48,45 @@ class BinanceManager:
             'side': 'SELL',
             'type': 'LIMIT',
             'timeInForce': 'GTC',
-            'quantity': 0.1,
-            'price': 23257.3
+            'quantity': 0.001,
+            'price': 27000.3
         }
-        try:
-            order = self.client.new_order(**params)
-            print('Success order')
-        except ClientError as error:
-            logging.error(
-                "Found error. status: {}, error code: {}, error message: {}".format(
-                    error.status_code, error.error_code, error.error_message
+        # check open orders.
+        check_orders = self.client.get_orders()
+        if len(check_orders) == 0 :
+            print('Sem ordens para comparar')
+            try:
+                order = self.client.new_order(**params)
+                print('Success order')
+                print("order")
+                print(order)
+                return order
+            except ClientError as error:
+                logging.error(
+                    "Found error. status: {}, error code: {}, error message: {}".format(
+                        error.status_code, error.error_code, error.error_message
+                    )
                 )
-            )
+
+
+        elif check_orders:
+            for order in check_orders:
+                symbol_check = 'BTCUSDT'
+                if order['symbol'] == symbol_check:
+                    print('Você já possui um trading aberto para esse par de moedas')
+                else:
+                    try:
+                        order = self.client.new_order(**params)
+                        print('Success order')
+                        return order
+
+                    except ClientError as error:
+                        logging.error(
+                            "Found error. status: {}, error code: {}, error message: {}".format(
+                                error.status_code, error.error_code, error.error_message
+                            )
+                        )
+
 
     def new_list_order(self, params=List):
         params = {
@@ -72,7 +98,7 @@ class BinanceManager:
                     "quantity": "0.001",
                     "timeInForce": "GTC",
                     "reduceOnly": "false",
-                    "price": "23939"
+                    "price": "2039"
                 },
                 {
                     "symbol": "BTCUSDT",
@@ -81,41 +107,48 @@ class BinanceManager:
                     "quantity": "0.001",
                     "timeInForce": "GTC",
                     "reduceOnly": "false",
-                    "price": "23939"
+                    "price": "27939"
                 }
             ]
         }
-        try:
-            order_list = self.client.new_batch_order(**params)
-            print('Success orders')
-        except ClientError as error:
-            logging.error(
-                "Found error. status: {}, error code: {}, error message: {}".format(
-                    error.status_code, error.error_code, error.error_message
-                )
-            )
+        check_orders = self.get_all_orders()
+        for order in check_orders:
+            if order['symbol'] == params['batchOrders'][0]['symbol']:
+                print('Você já tem uma ordem aberta para esse par de moedas')
+            else:
+                try:
+                    order_list = self.client.new_batch_order(**params)
+                    print('Success orders')
+                    print(order_list)
+                    return order_list
+                except ClientError as error:
+                    logging.error(
+                        "Found error. status: {}, error code: {}, error message: {}".format(
+                            error.status_code, error.error_code, error.error_message
+                        )
+                    )
 
     def get_all_orders(self, **kwargs):
         params = {**kwargs}
         print("Get all orders")
-        time_server = self.client.time()['serverTime']
-        check_time = datetime.now().timestamp()
-        print(time_server)
-        print(check_time)
-        print(check_time - time_server)
+        # time_server = self.client.time()['serverTime']
+        # check_time = datetime.now().timestamp()
         try:
             lista = []
             response = self.client.get_orders()
             if response:
                 for orders in response:
                     lista.append(orders)
-                    order_id = orders['orderId']
-                    symbol = orders['symbol']
-                    client_order_id = orders['clientOrderId']
-                    stop_price = orders['stopPrice']
-                    print(order_id, symbol, client_order_id, stop_price)
+
+                print(f"I found {len(lista)} open order(s).")
+                for i, v in enumerate(lista):
+                    print(f"Order {i+1}. Order ID- {v['orderId']}. Symbol = {v['symbol']}")
+                    print(f"Type: {v['type']}. Side = {v['side']}, Size: {v['origQty']}\n")
+                    print(f"\nComplete Info: {v}\n")
+
             else:
-                print('Not ordes')
+                print('Not orders')
+
             return lista
 
         except ClientError as error:
@@ -125,35 +158,42 @@ class BinanceManager:
                 )
             )
 
-    def cancel_ordes_open(self, **kwargs):
+    def cancel_orders_open(self, **kwargs):
         all_orders = self.get_all_orders()
+        all_positions = self.client.get_position_risk(symbol='BTCUSDT', recWindow=2000)
+        print("all_positions")
+        print(all_positions)
         for cancel_lista in all_orders:
             symbol = cancel_lista['symbol']
-        try:
-            response = self.client.cancel_open_orders(symbol=symbol, recvWindow=2000)
-            print('Ordemm cancelada')
-        except ClientError as error:
-            logging.error(
-                "Found error. status: {}, error code: {}, error message: {}".format(
-                    error.status_code, error.error_code, error.error_message
+            try:
+                response = self.client.cancel_open_orders(symbol=symbol, recvWindow=2000)
+                print('Ordemm cancelada')
+                print(response)
+            except ClientError as error:
+                logging.error(
+                    "Found error. status: {}, error code: {}, error message: {}".format(
+                        error.status_code, error.error_code, error.error_message
+                    )
                 )
-            )
-
-    def main(self):
-        try:
-            self.total_wallet_balance()  # informacoes financeira da conta
-            # self.wallet_balance()
-            self.get_all_orders()  # Pegar ordens aberta
-            self.new_list_order()  # fazer ordens multiplas
-            self.add_new_order()  # Uma ordem por vez
-            sleep(4)
-            self.get_all_orders()  # Pegar ordens aberta
-            sleep(3)
-            self.cancel_ordes_open()  # Cancelar ordem aberta
-        except Exception as e:
-            print(e)
 
 
 if __name__ == '__main__':
     bm = BinanceManager()
-    bm.main()
+    try:
+        bm.total_wallet_balance()  # informacoes financeira da conta
+        sleep(2)
+        bm.add_new_order()  # Uma ordem por vez
+        sleep(2)
+        bm.get_all_orders()  # Pegar ordens aberta
+        sleep(2)
+        bm.new_list_order()  # fazer ordens multiplas
+        sleep(2)
+        bm.get_all_orders()  # Pegar ordens aberta
+        sleep(2)
+        bm.cancel_orders_open()  # Cancelar ordem aberta
+        sleep(2)
+        bm.get_all_orders()  # Pegar ordens aberta
+        sleep(2)
+        bm.total_wallet_balance()  # informacoes financeira da conta
+    except Exception as e:
+        print(e)
