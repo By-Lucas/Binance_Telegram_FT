@@ -42,25 +42,46 @@ class BinanceManager:
                 )
             )
 
-    def add_new_order(self):
+    def add_new_order(self, symbol, side, type, timeInForce, price, stop_loss, take_profit,
+                            ):
         params = {
             'symbol': 'BTCUSDT',
             'side': 'SELL',
             'type': 'LIMIT',
             'timeInForce': 'GTC',
             'quantity': 0.001,
-            'price': 27000.3
+            # 'price': 27000.3,
+            'stopPrice': 22500,
+            'closePosition': True
         }
         # check open orders.
         check_orders = self.client.get_orders()
-        if len(check_orders) == 0 :
+        if len(check_orders) == 0:
             print('Sem ordens para comparar')
             try:
-                order = self.client.new_order(**params)
+                new_side = side
+                order_limit = self.client.new_order(symbol=symbol, side=side, type="LIMIT", timeInForce=timeInForce,
+                                                    price=price, closePosition=True)
+                if new_side == 'SELL':
+                    side = 'BUY'
+                    order_stop_loss = self.client.new_order(symbol=symbol, side=side, type='STOP_MARKET',
+                                                            stopPrice=stop_loss)
+                    order_take_profit = self.client.new_order(symbol=symbol, side=side, type='TAKE_PROFIT',
+                                                              stopPrice=take_profit)
+                else:
+                    side = 'SELL'
+                    order_stop_loss = self.client.new_order(symbol=symbol, side=side, type='STOP_MARKET',
+                                                            stopPrice=stop_loss)
+                    order_take_profit = self.client.new_order(symbol=symbol, side=side, type='TAKE_PROFIT',
+                                                              stopPrice=take_profit)
+
                 print('Success order')
                 print("order")
-                print(order)
-                return order
+                print(order_limit)
+                print(order_stop_loss)
+                print(order_take_profit)
+                return order_limit, order_stop_loss, order_take_profit
+
             except ClientError as error:
                 logging.error(
                     "Found error. status: {}, error code: {}, error message: {}".format(
@@ -70,15 +91,37 @@ class BinanceManager:
 
 
         elif check_orders:
-            for order in check_orders:
+            for order_limit in check_orders:
                 symbol_check = 'BTCUSDT'
-                if order['symbol'] == symbol_check:
+                if order_limit['symbol'] == symbol_check:
                     print('Você já possui um trading aberto para esse par de moedas')
                 else:
                     try:
-                        order = self.client.new_order(**params)
+                        new_side = side
+                        order_limit = self.client.new_order(symbol=symbol, side=side, type=type,
+                                                            timeInForce=timeInForce, price=price,
+                                                            closePosition=True)
+                        if new_side == 'SELL':
+                            side = 'BUY'
+                            order_stop_loss = self.client.new_order(symbol=symbol, side=side, type='STOP_MARKET',
+                                                                    stopPrice=stop_loss)
+                            order_take_profit = self.client.new_order(symbol=symbol, side=side, type='TAKE_PROFIT',
+                                                                      stopPrice=take_profit)
+                        else:
+                            side = 'SELL'
+                            order_stop_loss = self.client.new_order(symbol=symbol, side=side, type='STOP_MARKET',
+                                                                    stopPrice=stop_loss)
+                            order_take_profit = self.client.new_order(symbol=symbol, side=side, type='TAKE_PROFIT',
+                                                                      stopPrice=take_profit)
+
                         print('Success order')
-                        return order
+                        print("order_limit")
+                        print(order_limit)
+                        print("\norder_stop_loss")
+                        print(order_stop_loss)
+                        print("\norder_take_profit")
+                        print(order_take_profit)
+                        return order_limit, order_stop_loss, order_take_profit
 
                     except ClientError as error:
                         logging.error(
@@ -86,7 +129,6 @@ class BinanceManager:
                                 error.status_code, error.error_code, error.error_message
                             )
                         )
-
 
     def new_list_order(self, params=List):
         params = {
@@ -142,7 +184,7 @@ class BinanceManager:
 
                 print(f"I found {len(lista)} open order(s).")
                 for i, v in enumerate(lista):
-                    print(f"Order {i+1}. Order ID- {v['orderId']}. Symbol = {v['symbol']}")
+                    print(f"Order {i + 1}. Order ID- {v['orderId']}. Symbol = {v['symbol']}")
                     print(f"Type: {v['type']}. Side = {v['side']}, Size: {v['origQty']}\n")
                     print(f"\nComplete Info: {v}\n")
 
@@ -181,19 +223,20 @@ if __name__ == '__main__':
     bm = BinanceManager()
     try:
         bm.total_wallet_balance()  # informacoes financeira da conta
-        sleep(2)
-        bm.add_new_order()  # Uma ordem por vez
-        sleep(2)
+        sleep(1)
+        bm.add_new_order(symbol='BTCUSDT', side='BUY', type='LIMIT', timeInForce='GTC', price=23800, stop_loss=23500,
+                         take_profit=24200)  # Uma ordem por vez
+        sleep(1)
         bm.get_all_orders()  # Pegar ordens aberta
-        sleep(2)
-        bm.new_list_order()  # fazer ordens multiplas
-        sleep(2)
-        bm.get_all_orders()  # Pegar ordens aberta
-        sleep(2)
-        bm.cancel_orders_open()  # Cancelar ordem aberta
-        sleep(2)
-        bm.get_all_orders()  # Pegar ordens aberta
-        sleep(2)
-        bm.total_wallet_balance()  # informacoes financeira da conta
+        # sleep(2)
+        # bm.new_list_order()  # fazer ordens multiplas
+        # sleep(2)
+        # bm.get_all_orders()  # Pegar ordens aberta
+        # sleep(2)
+        # bm.cancel_orders_open()  # Cancelar ordem aberta
+        # sleep(2)
+        # bm.get_all_orders()  # Pegar ordens aberta
+        # sleep(2)
+        # bm.total_wallet_balance()  # informacoes financeira da conta
     except Exception as e:
         print(e)
